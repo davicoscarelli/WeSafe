@@ -1,10 +1,10 @@
-# USafe (usafe)
+# WeSafe (wesafe)
 
-Imagine Cup 2021 Project
+Imagine cup 2021 project
 
 ## Install the dependencies
 ```bash
-npm install
+yarn
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)

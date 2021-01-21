@@ -19,6 +19,7 @@ module.exports = function (/* ctx */) {
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
       
+      'i18n',
       'axios',
     ],
 
@@ -82,7 +83,7 @@ module.exports = function (/* ctx */) {
       // Possible values for "importStrategy":
       // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
       // * 'all'  - Manually specify what to import
-      importStrategy: 'auto',
+      importStrategy: 'all',
 
       // For special cases outside of where "auto" importStrategy can have an impact
       // (like functional components as one of the examples),
@@ -109,9 +110,9 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `USafe`,
-        short_name: `USafe`,
-        description: `Imagine Cup 2021 Project`,
+        name: `WeSafe`,
+        short_name: `WeSafe`,
+        description: `Imagine cup 2021 project`,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -176,7 +177,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'usafe'
+        appId: 'wesafe'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

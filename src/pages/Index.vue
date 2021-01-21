@@ -52,7 +52,7 @@ export default {
   }),
   computed: {
     user(){
-      return { name: 'Davi', age: 19}
+      return { name: 'Davi', age: 1}
     }
   },
   methods: {
@@ -67,46 +67,61 @@ export default {
       console.log(input, "inputtt")
 
       if (this.history[0] == 0){
-        if (input == '[0]') { text = "A vítima é você ou outra pessoa?"}
-        else if (input == '[0,0]') { text = "A vítima está com dificuldade para respirar?"}
-        else if (input == '[0,0,0]') {text = "A vítima tem mais de 8 anos de idade?"}
-        else if (input == '[0,0,1]') {text = "A vítima está consciente?"}
-        else if (input == '[0,0,1,0]') {text = "A vítima tem mais de 8 anos de idade??"}
-        else if (input == '[0,0,1,1]') {text = "A vítima tem mais de 8 anos de idade??"}
+        if (input == '[0]') { text = "Is the victim you or someone else?"}
+        else if (input == '[0,0]') { text = "Is the victim having difficulty breathing?"}
+        else if (input == '[0,0,0]') {text = "Is the victim over 8 years old?"}
+        else if (input == '[0,0,1]') {text = "Is the victim conscious?"}
+        else if (input == '[0,0,1,0]') {text = "Is the victim over 8 years old?"}
+        else if (input == '[0,0,1,1]') {text = "Is the victim over 8 years old?"}
         else if (input == '[0,0,0,1]') {text = "ANSWER1"}
         else if (input == '[0,0,0,0]') {text = "ANSWER2"}
         else if (input == '[0,0,1,0,0]') {text = "ANSWER6"}
         else if (input == '[0,0,1,0,1]') {text = "ANSWER5"}
         else if (input == '[0,0,1,1,0]') {text = "ANSWER2"}
-        else if (input == '[0,0,1,1,1]') {text = "A vítima é Grávida/Obesa?"}
+        else if (input == '[0,0,1,1,1]') {text = "Is the victim Pregnant/Obese?"}
         else if (input == '[0,0,1,1,1,0]') {text = "ANSWER3"}
         else if (input == '[0,0,1,1,1,1]') {text = "ANSWER4"}
 
-        else if (input === '[0,1]') {text = "Você está com dificuldade para respirar?"}
+        else if (input === '[0,1]') {text = "Are you having trouble breathing?"}
         else if (input == '[0,1,0]') { 
           if (this.user.age.length == 0){
-            
+            text = "Are you over 8 years old?"
           }else {
             if (this.user.age > 8){
               this.history.push(1)
               text = "ANSWER1"
             }
             else{
-              this.history.push(1)
+              this.history.push(0)
               text = "ANSWER2+"
 
             }
           }
         }
-        else if (input === '[0,1,1,0]') {text = "Você está sozinho(a)?"}
-        else if (input === '[0,1,1,0]') {text = "ANSWER3.2"}
+        else if (input == '[0,1,1]') { 
+          if (this.user.age.length == 0){
+            text = "Are you over 8 years old?"
+          }else {
+            if (this.user.age > 8){
+              this.history.push(1)
+              text = "ANSWER3.2"
+            }
+            else{
+              this.history.push(0)
+              text = "Are you alone?"
+
+            }
+          }
+        }
+        else if (input === '[0,1,0,0]') {text = "ANSWER2+"}
+        else if (input === '[0,1,0,1]') {text = "ANSWER1"}
+        else if (input === '[0,1,1,1]') {text = "ANSWER3.2"}
         else if (input === '[0,1,1,0,0]') {text = "ANSWER2+"}
         else if (input === '[0,1,1,0,1]') {text = "CALL 911"}
     
       }else if (input[0] == 1){
           text = 'other.1'
       }
-      console.log("oh o bot", text)
       this.botMessage = text
 
       this.sendMessage('in')

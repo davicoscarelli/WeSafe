@@ -36,6 +36,8 @@
 </template>
 
 <script>
+const sdk = require("microsoft-cognitiveservices-speech-sdk");
+
 export default {
   name: 'PageIndex',
   data: () => ({
@@ -52,16 +54,46 @@ export default {
   }),
   computed: {
     user(){
-      return { name: 'Davi', age: 1}
+      return { name: 'Davi', age: 19}
     }
   },
+  created(){
+    this.synthesizeSpeech(this.messages[0].body)
+
+  },
   methods: {
+
+    async synthesizeSpeech(text) {
+      let audioContext = new AudioContext()
+      let playSoundBuffer = ''
+
+      const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
+
+      // Set the output format
+      speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm;
+
+      const synthesizer = new sdk.SpeechSynthesizer(speechConfig, undefined);
+      synthesizer.speakTextAsync(
+          text,
+          result => {
+              // Interact with the audio ArrayBuffer data
+              const audioData = result.audioData;
+              
+              console.log(`Audio data byte size: ${audioData.byteLength}.`)
+
+              synthesizer.close();
+          },
+          error => {
+              console.log(error);
+              synthesizer.close();
+          });
+    },
 
     postMessage(){
 
     },
 
-    bot(){
+    async bot(){
       let text = ''
       const input = JSON.stringify(this.history)
       console.log(input, "inputtt")
@@ -124,8 +156,10 @@ export default {
       }
       this.botMessage = text
 
-      this.sendMessage('in')
+      await this.synthesizeSpeech(text)
 
+      
+      setTimeout(() => { this.sendMessage('in')  }, 1500);
       
     },
 
@@ -141,6 +175,9 @@ export default {
 
       if (message === 'chocking'){
         this.history.push(0)
+      }
+      if (message === 'clear'){
+        this.clearAllMessages()
       }
 
       if (message === 'me'){
@@ -171,8 +208,15 @@ export default {
     },
 
     clearAllMessages() {
-      this.messages = []
+      this.messages = [
+      {
+        id: 0,
+        body: "Welcome to WeSafe! What's your emergency?",
+        author: 'bot'
+      },
+    ]
       this.history = []
+      this.synthesizeSpeech(this.messages[0].body)
     }
   }
 }

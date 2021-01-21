@@ -12,8 +12,12 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "botframework-directlinejs": "^0.13.1",
+    "botframework-webchat": "^4.11.0",
     "core-js": "^3.6.5",
-    "quasar": "^1.0.0"
+    "quasar": "^1.0.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "vue-advanced-chat": "^0.6.6"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0"

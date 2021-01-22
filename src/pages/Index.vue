@@ -9,19 +9,36 @@
           :text-color="message.author == 'bot' ?  'white' : 'black'"
           class="q-px-md q-pt-sm"
           :class="{ 'message-out': message.author === 'you', 'message-in': message.author !== 'you' }"
-        />
+        >
+        <div class="col flex flex-center" v-if="message.id == 0">
+          <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Choking" @click="buttonSend('Choking')"/>
+          <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Bleeding" @click="buttonSend('Bleeding')"/>
+          <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Drowning" @click="buttonSend('Drowning')"/>
+          <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Fractures" @click="buttonSend('Fractures')"/>
+        </div>
+        </q-chat-message>
+
+        <q-chat-message
+          v-if="loading"
+          bg-color="secondary"
+          text-color="white"
+          class="q-px-md q-pt-sm message-in"
+        >
+        <q-spinner-dots size="2rem"/>
+        </q-chat-message>
       </q-scroll-area>
 
       <q-footer elevated>
         <q-toolbar>
-          <q-form @submit="sendMessage('out')" class="full-width">
+          <q-form @submit="sendMessage('out')" class="full-width ">
+            <div class="row">
             <q-input
               ref="newMessage"
               bg-color="white"
               rounded
               v-model="youMessage"
               placeholder="Message"
-              class="full-width"
+              class=" col-11 q-pr-sm"
               dense
               outlined
             >
@@ -29,6 +46,10 @@
                 <q-btn round dense flat type="submit" icon="send" color="primary" />
               </template>
             </q-input>
+            <div class="col-1 flex flex-center">
+              <q-btn round dense flat  icon="mic" color="white"  />
+            </div>
+            </div>
           </q-form>
         </q-toolbar>
       </q-footer>
@@ -42,23 +63,19 @@ export default {
   name: 'PageIndex',
   data: () => ({
     botMessage: '',
+    loading: false,
     youMessage: '',
     history: [],
-    messages: [
-      {
-        id: 0,
-        body: "Welcome to WeSafe! What's your emergency?",
-        author: 'bot'
-      },
-    ]
+    messages: []
   }),
   computed: {
     user(){
       return { name: 'Davi', age: 7}
     }
   },
-  created(){
-    this.synthesizeSpeech(this.messages[0].body)
+  mounted(){
+    this.botMessage = 'Welcome to WeSafe! Whats your emergency?'
+    this.synthesizeSpeech(this.botMessage)
 
   },
   methods: {
@@ -66,6 +83,7 @@ export default {
     async synthesizeSpeech(text) {
       let audioContext = new AudioContext()
       let playSoundBuffer = ''
+      this.loading = true
 
       const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
 
@@ -78,10 +96,15 @@ export default {
           result => {
               // Interact with the audio ArrayBuffer data
               const audioData = result.audioData;
+              this.loading = false
+              console.log(text)
               
               console.log(`Audio data byte size: ${audioData.byteLength}.`)
+              
 
               synthesizer.close();
+              this.sendMessage('in')
+              
           },
           error => {
               console.log(error);
@@ -93,8 +116,13 @@ export default {
 
     },
 
+    buttonSend(message){
+      this.youMessage = message
+      this.sendMessage('out')
+    },
+
     async bot(){
-      let text = ''
+      let text = this.botMessage
       const input = JSON.stringify(this.history)
       console.log(input, "inputtt")
 
@@ -110,7 +138,7 @@ export default {
         else if (input == '[0,0,1,0,0]') {text = "ANSWER6"}
         else if (input == '[0,0,1,0,1]') {text = "ANSWER5"}
         else if (input == '[0,0,1,1,0]') {text = "ANSWER2"}
-        else if (input == '[0,0,1,1,1]') {text = "Is the victim Pregnant/Obese?"}
+        else if (input == '[0,0,1,1,1]') {text = "Is the victim Pregnant or Obese?"}
         else if (input == '[0,0,1,1,1,0]') {text = "ANSWER3"}
         else if (input == '[0,0,1,1,1,1]') {text = "ANSWER4"}
 
@@ -158,32 +186,35 @@ export default {
 
       await this.synthesizeSpeech(text)
 
-      
-      setTimeout(() => { this.sendMessage('in')  }, 1500);
-      
+            
     },
 
-    async createHistory(message){
+    async createHistory(msg){
+      let message = msg.toLowerCase()
       console.log("Hmessage",message)
 
-      if (message === 'no'){
+      if (message === 'no' && this.history.length != 0){
         this.history.push(0)
       }
-      else if (message === 'yes'){
+      else if (message === 'yes' && this.history.length != 0){
         this.history.push(1)
       }
 
-      if (message === 'chocking'){
+      else if (message === 'choking' && this.history.length == 0){
         this.history.push(0)
       }
-      if (message === 'clear'){
+      else if (message === 'clear'){
         this.clearAllMessages()
       }
 
-      if (message === 'me'){
+      else if (message === 'me' && this.history.length != 0){
         this.history.push(1)
-      }else if (message === 'other'){
+      }
+      else if (message === 'other' && this.history.length != 0){
         this.history.push(0)
+      }
+      else{
+        this.botMessage = "Sorry, I didn't understand. Can you repeat?"
       }
       
     },
@@ -198,12 +229,13 @@ export default {
         this.youMessage = ''
         this.bot()
       } else if (direction === 'in') {
+        console.log(this.botMessage, "bot")
         this.messages.push({body: this.botMessage, author: 'bot', id: this.messages.length})
         this.botMessage = ''
       } 
       this.$refs.newMessage.focus();
       let messageDisplay = this.$refs.chatArea
-      messageDisplay.setScrollPosition(messageDisplay.$el.scrollHeight, 1);
+      messageDisplay.setScrollPosition(messageDisplay.$el.scrollHeight + 1000, 1);
       
     },
 
@@ -211,7 +243,7 @@ export default {
       this.messages = [
       {
         id: 0,
-        body: "Welcome to WeSafe! What's your emergency?",
+        body: "Welcome to WeSafe! Whats your emergency?",
         author: 'bot'
       },
     ]

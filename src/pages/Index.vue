@@ -47,7 +47,8 @@
               </template>
             </q-input>
             <div class="col-1 flex flex-center">
-              <q-btn round dense flat  icon="mic" color="white"  />
+              <q-btn v-if="!recording" round dense flat @click="speechToText" icon="mic" color="white"  />
+              <q-spinner-bars v-if="recording" color="white" size="2em"/>
             </div>
             </div>
           </q-form>
@@ -58,13 +59,19 @@
 
 <script>
 const sdk = require("microsoft-cognitiveservices-speech-sdk");
+import VueRecord from '@codekraft-studio/vue-record'
+import Vue from 'vue'
+
+Vue.use(VueRecord)
 
 export default {
+  
   name: 'PageIndex',
   data: () => ({
     botMessage: '',
     loading: false,
     youMessage: '',
+    recording: false,
     history: [],
     messages: []
   }),
@@ -80,6 +87,29 @@ export default {
   },
   methods: {
 
+    speechToText(){
+      try {
+  
+        const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
+        let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+        let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+        
+        console.log('Speak into your microphone.');
+        this.recording = true
+        recognizer.recognizeOnceAsync(result => {
+            this.youMessage = result.text
+            console.log(`RECOGNIZED: Text=${result.text}`);
+            this.recording = false
+            this.sendMessage('out')
+            return
+        });
+        
+      } catch (error) {
+        console.log("recognition", error)
+      }
+    },
+
+    
     async synthesizeSpeech(text) {
       let audioContext = new AudioContext()
       let playSoundBuffer = ''
@@ -191,26 +221,27 @@ export default {
 
     async createHistory(msg){
       let message = msg.toLowerCase()
+
       console.log("Hmessage",message)
 
-      if (message === 'no' && this.history.length != 0){
+      if ((message === 'no' || message.includes('yes')) && this.history.length != 0){
         this.history.push(0)
       }
-      else if (message === 'yes' && this.history.length != 0){
+      else if ((message === 'yes' || message.includes('yes')) && this.history.length != 0){
         this.history.push(1)
       }
 
-      else if (message === 'choking' && this.history.length == 0){
+      else if ((message === 'choking' || message.includes('choking')) && this.history.length == 0){
         this.history.push(0)
       }
-      else if (message === 'clear'){
+      else if (message === 'clear' || message.includes('clear')){
         this.clearAllMessages()
       }
 
-      else if (message === 'me' && this.history.length != 0){
+      else if ((message === 'me' || message.includes('me')) && this.history.length != 0){
         this.history.push(1)
       }
-      else if (message === 'other' && this.history.length != 0){
+      else if ((message === 'other' || message.includes('other')) && this.history.length != 0){
         this.history.push(0)
       }
       else{

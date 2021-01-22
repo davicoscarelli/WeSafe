@@ -54,7 +54,7 @@ export default {
   }),
   computed: {
     user(){
-      return { name: 'Davi', age: 19}
+      return { name: 'Davi', age: 7}
     }
   },
   created(){

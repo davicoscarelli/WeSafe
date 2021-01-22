@@ -1,0 +1,1 @@
+.headline{text-align:center;font-weight:100;color:#fff}.chat-area{height:calc(100vh - 100px);background:#fff;box-shadow:2px 2px 5px 2px rgba(0,0,0,0.3)}.message-out{padding-left:15%}.message-in{padding-right:15%}.chat-inputs{display:flex;justify-content:space-between}#person1-input,#person2-input{padding:.5em}

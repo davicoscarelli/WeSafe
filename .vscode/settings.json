@@ -1,4 +1,7 @@
 {
   
-  "vetur.experimental.templateInterpolationService": true
+  "vetur.experimental.templateInterpolationService": true,
+  "staticWebApps.appSubpath": "/",
+  "staticWebApps.apiSubpath": "api",
+  "staticWebApps.outputSubpath": "dist"
 }

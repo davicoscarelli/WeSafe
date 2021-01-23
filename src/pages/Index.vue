@@ -29,6 +29,11 @@
       </q-scroll-area>
 
       <q-footer elevated>
+        <transition name="slide-fade">
+          <div  class="row bg-secondary q-pa-sm justify-center " style="height: 50px" v-show="showOptions">
+            <q-btn :key="option" v-for="option in options[optionsType]" outline rounded color="white" style="width: 30%" no-caps dense text-color="white"  class="q-mx-sm" :label="option" @click="optionSend(option)"/>
+          </div>
+          </transition>
         <q-toolbar>
           <q-form @submit="sendMessage('out')" class="full-width ">
             <div class="row">
@@ -73,7 +78,10 @@ export default {
     youMessage: '',
     recording: false,
     history: [],
-    messages: []
+    messages: [],
+    options: [['Yes', 'No'], ['Me', 'Someone else']],
+    showOptions: false,
+    optionsType: null
   }),
   computed: {
     user(){
@@ -133,9 +141,12 @@ export default {
               
               console.log(`Audio data byte size: ${audioData.byteLength}.`)
               
-
+              
               synthesizer.close();
+              if (this.optionsType != null) this.showOptions = true
+
               this.sendMessage('in')
+
               
           },
           error => {
@@ -148,75 +159,81 @@ export default {
 
     },
 
+    optionSend(message){
+      this.youMessage = message
+      this.sendMessage('out')
+      this.showOptions = false 
+
+    },
     buttonSend(message){
       this.youMessage = message
       this.sendMessage('out')
-    },
+      },
 
     async bot(){
-      let text = this.botMessage
+      let message = {text: this.botMessage, optionsType: this.optionsType}
       const input = JSON.stringify(this.history)
       console.log(input, "inputtt")
 
       if (this.history[0] == 0){
-        if (input == '[0]') { text = "Is the victim you or someone else?"}
-        else if (input == '[0,0]') { text = "Is the victim having difficulty breathing?"}
-        else if (input == '[0,0,0]') {text = "Is the victim over 8 years old?"}
-        else if (input == '[0,0,1]') {text = "Is the victim conscious?"}
-        else if (input == '[0,0,1,0]') {text = "Is the victim over 8 years old?"}
-        else if (input == '[0,0,1,1]') {text = "Is the victim over 8 years old?"}
-        else if (input == '[0,0,0,1]') {text = "ANSWER1"}
-        else if (input == '[0,0,0,0]') {text = "ANSWER2"}
-        else if (input == '[0,0,1,0,0]') {text = "ANSWER6"}
-        else if (input == '[0,0,1,0,1]') {text = "ANSWER5"}
-        else if (input == '[0,0,1,1,0]') {text = "ANSWER2"}
-        else if (input == '[0,0,1,1,1]') {text = "Is the victim Pregnant or Obese?"}
-        else if (input == '[0,0,1,1,1,0]') {text = "ANSWER3"}
-        else if (input == '[0,0,1,1,1,1]') {text = "ANSWER4"}
+        if (input == '[0]') { message = {text: "Is the victim you or someone else?", optionsType: 1}}
+        else if (input == '[0,0]') { message = {text: "Is the victim having difficulty breathing?", optionsType: 0}}
+        else if (input == '[0,0,0]') {message = {text: "Is the victim over 8 years old?", optionsType: 0}}
+        else if (input == '[0,0,1]') { message = {text: "Is the victim conscious?", optionsType: 0}}
+        else if (input == '[0,0,1,0]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
+        else if (input == '[0,0,1,1]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
+        else if (input == '[0,0,0,1]') { message = {text: "ANSWER1", optionsType: null}}
+        else if (input == '[0,0,0,0]') { message = {text: "ANSWER2", optionsType: null}}
+        else if (input == '[0,0,1,0,0]') { message = {text: "ANSWER6", optionsType: null}}
+        else if (input == '[0,0,1,0,1]') { message = {text: "ANSWER5", optionsType: null}}
+        else if (input == '[0,0,1,1,0]') { message = {text: "ANSWER2", optionsType: null}}
+        else if (input == '[0,0,1,1,1]') { message = {text: "Is the victim Pregnant or Obese?", optionsType: 0}}
+        else if (input == '[0,0,1,1,1,0]') {message = {text: "ANSWER3", optionsType: null}}
+        else if (input == '[0,0,1,1,1,1]') {message = {text: "ANSWER4", optionsType: null}}
 
-        else if (input === '[0,1]') {text = "Are you having trouble breathing?"}
+        else if (input === '[0,1]') { message = {text: "Are you having trouble breathing?", optionsType: 0}}
         else if (input == '[0,1,0]') { 
           if (this.user.age.length == 0){
-            text = "Are you over 8 years old?"
+            message = {text: "Are you over 8 years old?", optionsType: 0}
           }else {
             if (this.user.age > 8){
               this.history.push(1)
-              text = "ANSWER1"
+              message = {text: "ANSWER1", optionsType: null}
             }
             else{
               this.history.push(0)
-              text = "ANSWER2+"
+              message = {text: "ANSWER2+", optionsType: null}
 
             }
           }
         }
         else if (input == '[0,1,1]') { 
           if (this.user.age.length == 0){
-            text = "Are you over 8 years old?"
+            message = {text: "Are you over 8 years old?", optionsType: 0}
           }else {
             if (this.user.age > 8){
               this.history.push(1)
-              text = "ANSWER3.2"
+              message = {text: "ANSWER3.2", optionsType: null}
             }
             else{
               this.history.push(0)
-              text = "Are you alone?"
+              message = {text: "Are you alone?", optionsType: 0}
 
             }
           }
         }
-        else if (input === '[0,1,0,0]') {text = "ANSWER2+"}
-        else if (input === '[0,1,0,1]') {text = "ANSWER1"}
-        else if (input === '[0,1,1,1]') {text = "ANSWER3.2"}
-        else if (input === '[0,1,1,0,0]') {text = "ANSWER2+"}
-        else if (input === '[0,1,1,0,1]') {text = "CALL 911"}
+        else if (input === '[0,1,0,0]') {message = {text: "ANSWER2+", optionsType: null}}
+        else if (input === '[0,1,0,1]') {message = {text: "ANSWER1", optionsType: null}}
+        else if (input === '[0,1,1,1]') {message = {text: "ANSWER3.2", optionsType: null}}
+        else if (input === '[0,1,1,0,0]') {message = {text: "ANSWER2+", optionsType: null}}
+        else if (input === '[0,1,1,0,1]') {message = {text: "CALL 911", optionsType: null}}
     
       }else if (input[0] == 1){
-          text = 'other.1'
+          message = {text: 'other.1', optionsType: 0}
       }
-      this.botMessage = text
-
-      await this.synthesizeSpeech(text)
+      this.botMessage = message.text
+      this.optionsType = message.optionsType
+      await this.synthesizeSpeech(message.text)
 
             
     },
@@ -229,7 +246,7 @@ export default {
       if ((message === 'no' || this.findWord('no', message)) && this.history.length != 0){
         this.history.push(0)
       }
-      else if ((message === 'yes' || this.findWord('yes', message)) && this.history.length != 0){
+      else if ((message === 'yep' || message === 'yes' || message === 'yeah' || this.findWord('yes', message) || this.findWord('yep', message) || this.findWord('yeah', message)) && this.history.length != 0){
         this.history.push(1)
       }
 
@@ -260,6 +277,7 @@ export default {
       if (!this.youMessage && !this.botMessage) {
         return
       }
+      
       if (direction === 'out') {
         this.messages.push({body: this.youMessage, author: 'you', id: this.messages.length})
         this.createHistory(this.youMessage)
@@ -292,6 +310,17 @@ export default {
 </script>
 
 <style>
+  .slide-fade-enter-active {
+    transition: all .3s ease;
+  }
+  .slide-fade-leave-active {
+    transition: all .2s ease;
+  }
+  .slide-fade-enter, .slide-fade-leave-to
+  /* .slide-fade-leave-active below version 2.1.8 */ {
+    transform: translateY(10px);
+    opacity: 0;
+  }
 
   .headline {
     text-align: center;
@@ -300,9 +329,9 @@ export default {
   }
   .chat-area {
   /*   border: 1px solid #ccc; */
-    height: calc(100vh - 100px);
+    height: calc(90vh - 100px);
     background: white;
-    box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3)
+    /* box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3) */
   }
  
   .message-out {

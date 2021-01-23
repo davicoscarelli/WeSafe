@@ -76,6 +76,7 @@ export default {
     botMessage: '',
     loading: false,
     youMessage: '',
+    audioContext: null,
     recording: false,
     history: [],
     messages: [],
@@ -88,8 +89,12 @@ export default {
       return { name: 'Davi', age: 7}
     }
   },
+  created(){
+    
+  },
   mounted(){
     this.botMessage = 'Welcome to WeSafe! Whats your emergency?'
+    this.audioContext = new AudioContext()
     this.synthesizeSpeech(this.botMessage)
 
   },
@@ -111,6 +116,7 @@ export default {
             console.log(`RECOGNIZED: Text=${result.text}`);
             this.recording = false
             this.sendMessage('out')
+            this.showOptions = false 
             return
         });
         
@@ -121,8 +127,7 @@ export default {
 
     
     async synthesizeSpeech(text) {
-      let audioContext = new AudioContext()
-      let playSoundBuffer = ''
+      
       this.loading = true
 
       const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");

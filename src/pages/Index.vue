@@ -93,6 +93,8 @@ export default {
         const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
         let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
         let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+        const phraseList = sdk.PhraseListGrammar.fromRecognizer(recognizer);
+        phraseList.addPhrase(['choking','no','yes','clear','me','other','someone','else']);
         
         console.log('Speak into your microphone.');
         this.recording = true
@@ -224,30 +226,34 @@ export default {
 
       console.log("Hmessage",message)
 
-      if ((message === 'no' || message.includes('yes')) && this.history.length != 0){
+      if ((message === 'no' || this.findWord('no', message)) && this.history.length != 0){
         this.history.push(0)
       }
-      else if ((message === 'yes' || message.includes('yes')) && this.history.length != 0){
+      else if ((message === 'yes' || this.findWord('yes', message)) && this.history.length != 0){
         this.history.push(1)
       }
 
-      else if ((message === 'choking' || message.includes('choking')) && this.history.length == 0){
+      else if ((message === 'choking' || this.findWord('choking', message)) && this.history.length == 0){
         this.history.push(0)
       }
-      else if (message === 'clear' || message.includes('clear')){
+      else if (message === 'clear' || this.findWord('clear', message)){
         this.clearAllMessages()
       }
 
-      else if ((message === 'me' || message.includes('me')) && this.history.length != 0){
+      else if ((message === 'me' || this.findWord('me', message)) && this.history.length != 0){
         this.history.push(1)
       }
-      else if ((message === 'other' || message.includes('other')) && this.history.length != 0){
+      else if ((message === 'other' || this.findWord('other', message) || message.includes('someone else')) && this.history.length != 0){
         this.history.push(0)
       }
       else{
         this.botMessage = "Sorry, I didn't understand. Can you repeat?"
       }
       
+    },
+    findWord(word, str) {
+      let test = str.match(/[\w-']+|[^\w\s]+/g).some(function(w){return w === word})
+      return test
     },
 
     sendMessage(direction) {
@@ -264,7 +270,7 @@ export default {
         this.messages.push({body: this.botMessage, author: 'bot', id: this.messages.length})
         this.botMessage = ''
       } 
-      this.$refs.newMessage.focus();
+      // this.$refs.newMessage.focus();
       let messageDisplay = this.$refs.chatArea
       messageDisplay.setScrollPosition(messageDisplay.$el.scrollHeight + 1000, 1);
       

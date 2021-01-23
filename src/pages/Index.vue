@@ -77,6 +77,9 @@ export default {
     loading: false,
     youMessage: '',
     audioContext: null,
+    speechConfig: null,
+    audioConfig: null,
+    recognizer: null,
     recording: false,
     history: [],
     messages: [],
@@ -90,11 +93,15 @@ export default {
     }
   },
   created(){
+    this.audioContext = new AudioContext()
+
+    this.speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
+    this.audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+    this.recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
     
   },
   mounted(){
     this.botMessage = 'Welcome to WeSafe! Whats your emergency?'
-    this.audioContext = new AudioContext()
     this.synthesizeSpeech(this.botMessage)
 
   },
@@ -103,15 +110,13 @@ export default {
     speechToText(){
       try {
   
-        const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
-        let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-        let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-        const phraseList = sdk.PhraseListGrammar.fromRecognizer(recognizer);
+        
+        const phraseList = sdk.PhraseListGrammar.fromRecognizer(this.recognizer);
         phraseList.addPhrase(['choking','no','yes','clear','me','other','someone','else']);
         
         console.log('Speak into your microphone.');
         this.recording = true
-        recognizer.recognizeOnceAsync(result => {
+        this.recognizer.recognizeOnceAsync(result => {
             this.youMessage = result.text
             console.log(`RECOGNIZED: Text=${result.text}`);
             this.recording = false
@@ -130,12 +135,11 @@ export default {
       
       this.loading = true
 
-      const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
 
       // Set the output format
       speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm;
 
-      const synthesizer = new sdk.SpeechSynthesizer(speechConfig, undefined);
+      const synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, undefined);
       synthesizer.speakTextAsync(
           text,
           result => {

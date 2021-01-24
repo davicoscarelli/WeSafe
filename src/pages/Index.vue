@@ -52,7 +52,7 @@
               </template>
             </q-input>
             <div class="col-1 flex flex-center">
-              <!-- <q-btn v-if="!recording" round dense flat @click="speechToText" icon="mic" color="white"  /> -->
+              <q-btn v-if="!recording" round dense flat @click="speechToText" icon="mic" color="white"  />
               <q-spinner-bars v-if="recording" color="white" size="2em"/>
             </div>
             </div>
@@ -73,7 +73,6 @@ export default {
     botMessage: '',
     loading: false,
     youMessage: '',
-    audioContext: null,
     recording: false,
     history: [],
     messages: [],
@@ -91,36 +90,35 @@ export default {
   },
   mounted(){
     this.botMessage = 'Welcome to WeSafe! Whats your emergency?'
-    // this.audioContext = new AudioContext()
+    
     this.synthesizeSpeech(this.botMessage)
 
   },
   methods: {
 
-    // speechToText(){
-    //   try {
-  
-    //     const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
-    //     let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-    //     let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-    //     const phraseList = sdk.PhraseListGrammar.fromRecognizer(recognizer);
-    //     phraseList.addPhrase(['choking','no','yes','clear','me','other','someone','else']);
+    speechToText(){
+      try {
+        const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
+        let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+        let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+        const phraseList = sdk.PhraseListGrammar.fromRecognizer(recognizer);
+        phraseList.addPhrase(['choking','no','yes','clear','me','other','someone','else']);
         
-    //     console.log('Speak into your microphone.');
-    //     this.recording = true
-    //     recognizer.recognizeOnceAsync(result => {
-    //         this.youMessage = result.text
-    //         console.log(`RECOGNIZED: Text=${result.text}`);
-    //         this.recording = false
-    //         this.sendMessage('out')
-    //         this.showOptions = false 
-    //         return
-    //     });
+        console.log('Speak into your microphone.');
+        this.recording = true
+        recognizer.recognizeOnceAsync(result => {
+            this.youMessage = result.text
+            console.log(`RECOGNIZED: Text=${result.text}`);
+            this.recording = false
+            this.sendMessage('out')
+            this.showOptions = false 
+            return
+        });
         
-    //   } catch (error) {
-    //     console.log("recognition", error)
-    //   }
-    // },
+      } catch (error) {
+        console.log("recognition", error)
+      }
+    },
 
     
     async synthesizeSpeech(text) {

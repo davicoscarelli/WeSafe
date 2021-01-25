@@ -3,20 +3,36 @@
      <q-scroll-area ref="chatArea" class="chat-area">
         <q-chat-message
           :key="message.id" v-for="message in messages"
-          :text="[message.body]"
+          :text="[message.text]"
           :sent="message.author == 'bot' ?  false : true"
           :bg-color="message.author == 'bot' ? 'secondary' : '#e0e0e0'"
           :text-color="message.author == 'bot' ?  'white' : 'black'"
           class="q-px-md q-pt-sm"
           :class="{ 'message-out': message.author === 'you', 'message-in': message.author !== 'you' }"
         >
+        <p v-if="message.text2">{{message.text2}}</p>
+
+        <q-video
+          v-if="message.video"
+          :src="message.video"
+          allowfullscreen
+          frameborder="0"
+        />
+
+        <p v-if="message.text3">{{message.text3}}</p>
+        
+        
+        
         <div class="col flex flex-center" v-if="message.id == 0">
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Choking" @click="buttonSend('Choking')"/>
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Bleeding" @click="buttonSend('Bleeding')"/>
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Drowning" @click="buttonSend('Drowning')"/>
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Fractures" @click="buttonSend('Fractures')"/>
         </div>
+          <q-btn v-if="message.warning" style="width: 100%" icon="phone" flat color="white" class="bg-orange" label="Call 911" href="tel:911" />
+         
         </q-chat-message>
+        
 
         <q-chat-message
           v-if="loading"
@@ -70,7 +86,7 @@ export default {
   
   name: 'PageIndex',
   data: () => ({
-    botMessage: '',
+    botMessage: {},
     loading: false,
     youMessage: '',
     recording: false,
@@ -89,7 +105,7 @@ export default {
     
   },
   mounted(){
-    this.botMessage = 'Welcome to WeSafe! Whats your emergency?'
+    this.botMessage = {text:'Welcome to WeSafe! Whats your emergency?'}
     this.synthesizeSpeech(this.botMessage)
 
   },
@@ -120,8 +136,13 @@ export default {
     },
 
     
-    async synthesizeSpeech(text) {
-      
+    async synthesizeSpeech(message) {
+      let text = ''
+
+      if (message.text2) text = message.text + ' ' + message.text2 + ' ' + message.text3
+      else text = message.text
+            
+    
       this.loading = true
 
       const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
@@ -142,7 +163,10 @@ export default {
               synthesizer.close();
               if (this.optionsType != null) this.showOptions = true
 
+               
+              console.log(text.length)
               this.sendMessage('in')
+            
 
               
           },
@@ -175,8 +199,8 @@ export default {
         else if (input == '[0,0,1]') { message = {text: "Is the victim conscious?", optionsType: 0}}
         else if (input == '[0,0,1,0]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
         else if (input == '[0,0,1,1]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
-        else if (input == '[0,0,0,1]') { message = {text: "Recline the victim and let the person cough until what was obstructing the airway comes out or can be removed.", text2: 'Mantenha a tranquilidade para que a situação não se agrave.', optionsType: null, }}
-        else if (input == '[0,0,0,0]') { message = {text: "ANSWER2", optionsType: null}}
+        else if (input == '[0,0,0,1]') { message = {text: "Recline the victim and let the person cough until what was obstructing the airway comes out or can be removed.", text2: 'Keep the victim calm so the situation does not get worse.', text3: 'In case of aggravation call emergency!', warning: true, optionsType: null, }}
+        else if (input == '[0,0,0,0]') { message = {text: "Hold the victim with one hand, with the fingers positioned on the jaw and supporting the victim's body on his forearm. Tilt the victim's head down and support the weight on the leg. Perform five moderate slaps on the victim's back with the other hand flat.", text2: 'Then turn the victim to the front and proceed with five chest swabs. Repeat the process until the victim breathes.', text3: 'In case of aggravation call emergency!',video: 'https://youtube.com/watch?v=gHZdBY-CkGw&t=1m23s', warning: true, optionsType: null}}
         else if (input == '[0,0,1,0,0]') { message = {text: "ANSWER6", optionsType: null}}
         else if (input == '[0,0,1,0,1]') { message = {text: "ANSWER5", optionsType: null}}
         else if (input == '[0,0,1,1,0]') { message = {text: "ANSWER2", optionsType: null}}
@@ -191,7 +215,7 @@ export default {
           }else {
             if (this.user.age > 8){
               this.history.push(1)
-              message = {text: "ANSWER1", optionsType: null}
+              message = {text: "Recline yourself and cough until what was obstructing your airway comes out or can be removed.", text2: 'Keep calm so the situation does not get worse. In case of aggravation call emergency!', warning: true, optionsType: null }
             }
             else{
               this.history.push(0)
@@ -216,7 +240,7 @@ export default {
           }
         }
         else if (input === '[0,1,0,0]') {message = {text: "ANSWER2+", optionsType: null}}
-        else if (input === '[0,1,0,1]') {message = {text: "ANSWER1", optionsType: null}}
+        else if (input === '[0,1,0,1]') { message = {text: "Recline yourself and cough until what was obstructing your airway comes out or can be removed.", text2: 'Keep calm so the situation does not get worse. In case of aggravation call emergency!', warning: true, optionsType: null }}
         else if (input === '[0,1,1,1]') {message = {text: "ANSWER3.2", optionsType: null}}
         else if (input === '[0,1,1,0,0]') {message = {text: "ANSWER2+", optionsType: null}}
         else if (input === '[0,1,1,0,1]') {message = {text: "CALL 911", optionsType: null}}
@@ -224,9 +248,9 @@ export default {
       }else if (input[0] == 1){
           message = {text: 'other.1', optionsType: 0}
       }
-      this.botMessage = message.text
+      this.botMessage = message
       this.optionsType = message.optionsType
-      await this.synthesizeSpeech(message.text)
+      await this.synthesizeSpeech(message)
 
             
     },
@@ -271,13 +295,13 @@ export default {
       }
       
       if (direction === 'out') {
-        this.messages.push({body: this.youMessage, author: 'you', id: this.messages.length})
+        this.messages.push({text: this.youMessage, author: 'you', id: this.messages.length})
         this.createHistory(this.youMessage)
         this.youMessage = ''
         this.bot()
       } else if (direction === 'in') {
         console.log(this.botMessage, "bot")
-        this.messages.push({body: this.botMessage, author: 'bot', id: this.messages.length})
+        this.messages.push({...this.botMessage, author: 'bot', id: this.messages.length})
         this.botMessage = ''
       } 
       let messageDisplay = this.$refs.chatArea
@@ -286,15 +310,10 @@ export default {
     },
 
     clearAllMessages() {
-      this.messages = [
-      {
-        id: 0,
-        body: "Welcome to WeSafe! Whats your emergency?",
-        author: 'bot'
-      },
-    ]
+      this.messages = []
       this.history = []
-      this.synthesizeSpeech(this.messages[0].body)
+      this.botMessage = 'Welcome to WeSafe! Whats your emergency?'
+      this.synthesizeSpeech(this.botMessage)
     }
   }
 }

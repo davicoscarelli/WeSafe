@@ -82,7 +82,7 @@ export default {
   }),
   computed: {
     user(){
-      return { name: 'Davi', age: 7}
+      return { name: 'Davi', age: 19}
     }
   },
   created(){
@@ -90,7 +90,6 @@ export default {
   },
   mounted(){
     this.botMessage = 'Welcome to WeSafe! Whats your emergency?'
-    
     this.synthesizeSpeech(this.botMessage)
 
   },
@@ -127,14 +126,12 @@ export default {
 
       const speechConfig = sdk.SpeechConfig.fromSubscription("80336464dd984e3489ab38cbb895823e", "eastus");
 
-      // Set the output format
       speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm;
 
       const synthesizer = new sdk.SpeechSynthesizer(speechConfig, undefined);
       synthesizer.speakTextAsync(
           text,
           result => {
-              // Interact with the audio ArrayBuffer data
               const audioData = result.audioData;
               this.loading = false
               console.log(text)
@@ -154,10 +151,6 @@ export default {
               synthesizer.close();
           });
     },
-
-    // postMessage(){
-
-    // },
 
     optionSend(message){
       this.youMessage = message
@@ -182,7 +175,7 @@ export default {
         else if (input == '[0,0,1]') { message = {text: "Is the victim conscious?", optionsType: 0}}
         else if (input == '[0,0,1,0]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
         else if (input == '[0,0,1,1]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
-        else if (input == '[0,0,0,1]') { message = {text: "ANSWER1", optionsType: null}}
+        else if (input == '[0,0,0,1]') { message = {text: "Recline the victim and let the person cough until what was obstructing the airway comes out or can be removed.", text2: 'Mantenha a tranquilidade para que a situação não se agrave.', optionsType: null, }}
         else if (input == '[0,0,0,0]') { message = {text: "ANSWER2", optionsType: null}}
         else if (input == '[0,0,1,0,0]') { message = {text: "ANSWER6", optionsType: null}}
         else if (input == '[0,0,1,0,1]') { message = {text: "ANSWER5", optionsType: null}}
@@ -256,7 +249,6 @@ export default {
       else if (message === 'clear' || this.findWord('clear', message)){
         this.clearAllMessages()
       }
-
       else if ((message === 'me' || this.findWord('me', message)) && this.history.length != 0){
         this.history.push(1)
       }

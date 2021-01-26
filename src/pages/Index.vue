@@ -1,6 +1,6 @@
 <template>
   <q-page class="">
-     <q-scroll-area ref="chatArea" class="chat-area">
+     <q-scroll-area ref="chatArea" :class="{ 'chat-area': !showOptions, 'chat-area-min': showOptions }"> 
         <q-chat-message
           :key="message.id" v-for="message in messages"
           :text="[message.text]"
@@ -12,11 +12,11 @@
         >
         <p v-if="message.text2">{{message.text2}}</p>
 
-        <q-video
+        <q-img
+          class="rounded-borders"
+          @click="openVideo(message.videoLink)"
           v-if="message.video"
           :src="message.video"
-          allowfullscreen
-          frameborder="0"
         />
 
         <p v-if="message.text3">{{message.text3}}</p>
@@ -29,7 +29,7 @@
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Drowning" @click="buttonSend('Drowning')"/>
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Fractures" @click="buttonSend('Fractures')"/>
         </div>
-          <q-btn v-if="message.warning" style="width: 100%" icon="phone" flat color="white" class="bg-orange" label="Call 911" href="tel:911" />
+          <q-btn v-if="message.warning" style="width: 100%" icon="phone" flat color="white"  :class="{ 'bg-red': message.text === 'Firstly call the emergency!' && message.text === 'Call the emergency!' ,  'bg-orange': message.text !== 'Firstly call the emergency!' && message.text !== 'Call the emergency!'}" label="Call 911" href="tel:911" />
          
         </q-chat-message>
         
@@ -80,6 +80,8 @@
 
 <script>
 const sdk = require("microsoft-cognitiveservices-speech-sdk");
+import { openURL } from 'quasar'
+
 
 
 export default {
@@ -98,7 +100,7 @@ export default {
   }),
   computed: {
     user(){
-      return { name: 'Davi', age: 19}
+      return { name: 'Davi', age: 1}
     }
   },
   created(){
@@ -110,6 +112,9 @@ export default {
 
   },
   methods: {
+    openVideo(url){
+      openURL(url)
+    },
 
     speechToText(){
       try {
@@ -166,6 +171,8 @@ export default {
                
               console.log(text.length)
               this.sendMessage('in')
+              let messageDisplay = this.$refs.chatArea
+              messageDisplay.setScrollPosition(messageDisplay.$el.scrollHeight + 10000, 1);
             
 
               
@@ -200,13 +207,13 @@ export default {
         else if (input == '[0,0,1,0]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
         else if (input == '[0,0,1,1]') { message = {text: "Is the victim over 8 years old?", optionsType: 0}}
         else if (input == '[0,0,0,1]') { message = {text: "Recline the victim and let the person cough until what was obstructing the airway comes out or can be removed.", text2: 'Keep the victim calm so the situation does not get worse.', text3: 'In case of aggravation call emergency!', warning: true, optionsType: null, }}
-        else if (input == '[0,0,0,0]') { message = {text: "Hold the victim with one hand, with the fingers positioned on the jaw and supporting the victim's body on his forearm. Tilt the victim's head down and support the weight on the leg. Perform five moderate slaps on the victim's back with the other hand flat.", text2: 'Then turn the victim to the front and proceed with five chest swabs. Repeat the process until the victim breathes.', text3: 'In case of aggravation call emergency!',video: 'https://youtube.com/watch?v=gHZdBY-CkGw&t=1m23s', warning: true, optionsType: null}}
-        else if (input == '[0,0,1,0,0]') { message = {text: "ANSWER6", optionsType: null}}
-        else if (input == '[0,0,1,0,1]') { message = {text: "ANSWER5", optionsType: null}}
-        else if (input == '[0,0,1,1,0]') { message = {text: "ANSWER2", optionsType: null}}
+        else if (input == '[0,0,0,0]') { message = {text: "Hold the victim with one hand, with the fingers positioned on the jaw and supporting the victim's body on his forearm. Tilt the victim's head down and support the weight on the leg. Perform five moderate slaps on the victim's back with the other hand flat.", text2: 'Then turn the victim to the front and proceed with five chest thrusts. Repeat the process until the victim breathes.', text3: 'In case of aggravation call emergency!', video: './answer2.gif', videoLink: 'http://www.youtube.com/watch?v=gHZdBY-CkGw&t=1m23s', warning: true, optionsType: null}}
+        else if (input == '[0,0,1,0,0]') { message = {text: "Firstly call the emergency!", text2: "Then locate the area over the heart to begin chest compressions – between the breasts and on the lower third of the sternum. Stand or kneel directly over the patient's chest. Lock your elbows and use only your upper bodyweight to supply the force for the chest compressions, and count as you perform them. Perform 30 chest compressions.", text3: "Perform 30 chest compressions. Look inside their mouth. See if any obstructions came loose from the chest compressions. If you see something, sweep it out using your finger. If you don't, breathe into the mouth If you see an object, sweep it out and try two more rescue breaths.", video: './answer6.gif', videoLink: 'https://www.youtube.com/watch?v=_K7Dwy6b2wQ', warning: true, optionsType: null}}
+        else if (input == '[0,0,1,0,1]') { message = {text: "Firstly call the emergency!", text2: "Then lower the person on his or her back onto the floor, arms to the side. Clear the airway. If a blockage is visible at the back of the throat or high in the throat, reach a finger into the mouth and sweep out the cause of the blockage. Don't try a finger sweep if you can't see the object. Be careful not to push the food or object deeper into the airway, which can happen easily in young children.", text3: "Begin CPR if the object remains lodged and the person doesn't respond after you take the above measures. The chest compressions used in CPR may dislodge the object. Remember to recheck the mouth periodically.", video: './answer5.gif', videoLink: 'https://www.youtube.com/watch?v=5kmsKNvKAvU', warning: true, optionsType: null}}
+        else if (input == '[0,0,1,1,0]') { message = {text: "Hold the victim with one hand, with the fingers positioned on the jaw and supporting the victim's body on his forearm. Tilt the victim's head down and support the weight on the leg. Perform five moderate slaps on the victim's back with the other hand flat.", text2: 'Then turn the victim to the front and proceed with five chest thrusts. Repeat the process until the victim breathes.', text3: 'In case of aggravation call emergency!', video: './answer2.gif', videoLink: 'http://www.youtube.com/watch?v=gHZdBY-CkGw&t=1m23s', warning: true, optionsType: null}}
         else if (input == '[0,0,1,1,1]') { message = {text: "Is the victim Pregnant or Obese?", optionsType: 0}}
-        else if (input == '[0,0,1,1,1,0]') {message = {text: "ANSWER3", optionsType: null}}
-        else if (input == '[0,0,1,1,1,1]') {message = {text: "ANSWER4", optionsType: null}}
+        else if (input == '[0,0,1,1,1,0]') {message = {text: "Stand or kneel behind the person and wrap your arms around his or her waist. Make a fist with one hand. Place the thumb side of your fist against the person's belly, just above the belly button but well below the breastbone. Grasp your fist with the other hand. Give a quick upward thrust into the belly. This may cause the object to pop out.", text2: " You may need to use more force for a large person and less for a child or small adult. Repeat thrusts until the object pops out or the person faints.", text3: 'In case of aggravation call emergency!', video: './answer3.gif', videoLink: 'https://www.youtube.com/watch?v=DE45ks9miIw', warning: true, optionsType: null}}
+        else if (input == '[0,0,1,1,1,1]') {message = {text: "Stand or kneel behind the person and wrap your arms around his or her chest. Make a fist with one hand. Place the thumb side of your fist at the base of the breastbone, just above the joining of the lowest ribs. Grasp your fist with the other hand. Press hard into the chest, with a quick thrust.", text2: " Repeat thrusts until the object pops out or the person faints.", text3: 'In case of aggravation call emergency!', video: './answer4.gif', videoLink: 'https://www.youtube.com/watch?v=DHFnxAq1-KM&t=1m50s', warning: true, optionsType: null}}
 
         else if (input === '[0,1]') { message = {text: "Are you having trouble breathing?", optionsType: 0}}
         else if (input == '[0,1,0]') { 
@@ -215,11 +222,11 @@ export default {
           }else {
             if (this.user.age > 8){
               this.history.push(1)
-              message = {text: "Recline yourself and cough until what was obstructing your airway comes out or can be removed.", text2: 'Keep calm so the situation does not get worse. In case of aggravation call emergency!', warning: true, optionsType: null }
+              message = {text: "Recline yourself and cough until what was obstructing your airway comes out or can be removed.", text2: 'Keep calm so the situation does not get worse.', text3: ' In case of aggravation call emergency!', warning: true, optionsType: null }
             }
             else{
               this.history.push(0)
-              message = {text: "ANSWER2+", optionsType: null}
+              message = {text: "Ask for help and tell the person to follow the next steps:", text2: "Recline the victim and let the person cough until what was obstructing the airway comes out or can be removed.", text3: 'Keep the victim calm so the situation does not get worse. In case of aggravation call emergency!', warning: true, optionsType: null, }
 
             }
           }
@@ -230,7 +237,7 @@ export default {
           }else {
             if (this.user.age > 8){
               this.history.push(1)
-              message = {text: "ANSWER3.2", optionsType: null}
+              message = {text: "Lean over a table edge, chair, or railing. Quickly thrust your upper belly area (upper abdomen) against the edge. You can also do this: Make a fist with one hand and put the thumb side between your belly button and rib cage. Place your other hand on top of that. Push as hard as you can in a quick motion straight into your abdomen.", text2: "If you are pregnant, you should place your hands higher than usual, under the breast bone. Another alternative maneuver is to slam your back into a wall while coughing.", text3: 'In case of aggravation call emergency!', video: './answer3_2.gif', videoLink: 'https://www.youtube.com/watch?v=ljL9JcK6RnM', warning: true, optionsType: null}
             }
             else{
               this.history.push(0)
@@ -239,11 +246,11 @@ export default {
             }
           }
         }
-        else if (input === '[0,1,0,0]') {message = {text: "ANSWER2+", optionsType: null}}
+        else if (input === '[0,1,0,0]') {message = {text: "Ask for help and tell the person to follow the next steps:", text2: "Recline the victim and let the person cough until what was obstructing the airway comes out or can be removed.", text3: 'Keep the victim calm so the situation does not get worse. In case of aggravation call emergency!', warning: true, optionsType: null, }}
         else if (input === '[0,1,0,1]') { message = {text: "Recline yourself and cough until what was obstructing your airway comes out or can be removed.", text2: 'Keep calm so the situation does not get worse. In case of aggravation call emergency!', warning: true, optionsType: null }}
-        else if (input === '[0,1,1,1]') {message = {text: "ANSWER3.2", optionsType: null}}
-        else if (input === '[0,1,1,0,0]') {message = {text: "ANSWER2+", optionsType: null}}
-        else if (input === '[0,1,1,0,1]') {message = {text: "CALL 911", optionsType: null}}
+        else if (input === '[0,1,1,1]') {message = {text: "Lean over a table edge, chair, or railing. Quickly thrust your upper belly area (upper abdomen) against the edge. You can also do this: Make a fist with one hand and put the thumb side between your belly button and rib cage. Place your other hand on top of that. Push as hard as you can in a quick motion straight into your abdomen.", text2: "If you are pregnant, you should place your hands higher than usual, under the breast bone. Another alternative maneuver is to slam your back into a wall while coughing.", text3: 'In case of aggravation call emergency!', video: './answer3_2.gif', videoLink: 'https://www.youtube.com/watch?v=ljL9JcK6RnM', warning: true, optionsType: null}}
+        else if (input === '[0,1,1,0,0]') {message = {text: "Ask for help and tell the person to follow the next steps:", text2: "Recline the victim and let the person cough until what was obstructing the airway comes out or can be removed.", text3: 'Keep the victim calm so the situation does not get worse. In case of aggravation call emergency!', warning: true, optionsType: null, }}
+        else if (input === '[0,1,1,0,1]') {message = {text: "Call the emergency!", warning: true, optionsType: null}}
     
       }else if (input[0] == 1){
           message = {text: 'other.1', optionsType: 0}
@@ -305,7 +312,7 @@ export default {
         this.botMessage = ''
       } 
       let messageDisplay = this.$refs.chatArea
-      messageDisplay.setScrollPosition(messageDisplay.$el.scrollHeight + 1000, 1);
+      messageDisplay.setScrollPosition(messageDisplay.$el.scrollHeight + 10000, 1);
       
     },
 
@@ -337,9 +344,14 @@ export default {
     font-weight: 100;
     color: white;
   }
+  .chat-area-min{
+    height: calc(90vh - 100px);
+    background: white;
+
+  }
   .chat-area {
   /*   border: 1px solid #ccc; */
-    height: calc(90vh - 100px);
+    height: calc(100vh - 100px);
     background: white;
     /* box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3) */
   }

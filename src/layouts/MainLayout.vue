@@ -6,14 +6,20 @@
           flat
           dense
           round
+          :class="titleColor"
           icon="menu"
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
 
-        <q-toolbar-title>
+        <q-toolbar-title :class="titleColor">
           WeSafe
         </q-toolbar-title>
+
+        <q-space />
+        <div>
+          <UserAvatar></UserAvatar>
+        </div>
 
         
       </q-toolbar>
@@ -23,12 +29,12 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      content-class="bg-grey-1"
+      :content-class="bgColor"
     >
       <q-list>
         <q-item-label
           header
-          class="text-grey-8"
+          :class="titleColor2"
         >
           Imagine Cup 2021
         </q-item-label>
@@ -61,12 +67,25 @@ const linksData = [
 
 export default {
   name: 'MainLayout',
-  components: { EssentialLink },
-  data () {
-    return {
-      leftDrawerOpen: false,
+  components: { 
+    EssentialLink,
+    UserAvatar: () => import('components/user-avatar')
+   },
+  data: () => ({
+    leftDrawerOpen: false,
       essentialLinks: linksData
+  }),
+  computed: {
+    titleColor(){
+      return this.$q.dark.isActive ? 'text-black' : 'text-white'
+    },
+    titleColor2(){
+      return this.$q.dark.isActive ? 'text-white' : 'text-black'
+    },
+    bgColor(){
+      return this.$q.dark.isActive ? 'bg-primary' : 'bg-grey-1'
     }
-  }
+  },
+  
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
-  <q-page class="">
-     <q-scroll-area ref="chatArea" :class="{ 'chat-area': !showOptions, 'chat-area-min': showOptions }"> 
+  <q-page>
+     <q-scroll-area ref="chatArea" :class="{ 'chat-area': !showOptions, 'chat-area-min': showOptions }" > 
         <q-chat-message
           :key="message.id" v-for="message in messages"
           :text="[message.text]"
@@ -24,10 +24,11 @@
         
         
         <div class="col flex flex-center" v-if="message.id == 0">
+          For example:
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Choking" @click="buttonSend('Choking')"/>
-          <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Bleeding" @click="buttonSend('Bleeding')"/>
+          <!-- <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Bleeding" @click="buttonSend('Bleeding')"/>
           <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Drowning" @click="buttonSend('Drowning')"/>
-          <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Fractures" @click="buttonSend('Fractures')"/>
+          <q-btn rounded color="white" no-caps text-color="primary" style="width: 80%" class="q-ma-xs" label="Fractures" @click="buttonSend('Fractures')"/> -->
         </div>
           <q-btn v-if="message.warning" style="width: 100%" icon="phone" flat color="white"  :class="{ 'bg-red': message.text === 'Call the emergency!' ,  'bg-orange': message.text !== 'Call the emergency!'}" label="Call 911" href="tel:911" />
          
@@ -55,7 +56,7 @@
             <div class="row">
             <q-input
               ref="newMessage"
-              bg-color="white"
+              :bg-color="returnColor"
               rounded
               v-model="youMessage"
               placeholder="Message"
@@ -68,8 +69,8 @@
               </template>
             </q-input>
             <div class="col-1 flex flex-center">
-              <q-btn v-if="!recording" round dense flat @click="speechToText" icon="mic" color="white"  />
-              <q-spinner-bars v-if="recording" color="white" size="2em"/>
+              <q-btn v-if="!recording" round dense flat @click="speechToText" icon="mic" :color="$q.dark.isActive ? 'black' : 'white'"  />
+              <q-spinner-bars v-if="recording" :color="$q.dark.isActive ? 'black' : 'white'" size="2em"/>
             </div>
             </div>
           </q-form>
@@ -101,6 +102,9 @@ export default {
   computed: {
     user(){
       return { name: 'Davi', age: 1}
+    },
+    returnColor() {
+      return this.$q.dark.isActive ? 'black' : 'grey-2'
     }
   },
   created(){
@@ -342,17 +346,14 @@ export default {
   .headline {
     text-align: center;
     font-weight: 100;
-    color: white;
   }
   .chat-area-min{
     height: calc(90vh - 100px);
-    background: white;
 
   }
   .chat-area {
   /*   border: 1px solid #ccc; */
     height: calc(100vh - 100px);
-    background: white;
     /* box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3) */
   }
  

@@ -100,8 +100,18 @@ export default {
     optionsType: null
   }),
   computed: {
-    user(){
-      return { name: 'Davi', age: 1}
+    user() {
+      let data = {name: "Test User", birthdate: ''}
+      let user = {}
+      if (!localStorage.user){
+        localStorage.user = JSON.stringify(data)
+        user = data
+      }else{
+        data = JSON.parse(localStorage.user)
+        user = {...data, age: this.getAge(data)}
+      }
+
+      return user
     },
     returnColor() {
       return this.$q.dark.isActive ? 'black' : 'grey-2'
@@ -118,6 +128,20 @@ export default {
   methods: {
     openVideo(url){
       openURL(url)
+    },
+    getAge(user) {
+      const today = new Date();
+      let date = user.birthdate.slice(6,10) + '-' +  user.birthdate.slice(3,5) + '-' +  user.birthdate.slice(0,2)
+      console.log(date)
+      const birthdate = new Date(date);
+      console.log(birthdate)
+      let age = today.getFullYear() - birthdate.getFullYear();
+      if (
+        new Date(today.getFullYear(), today.getMonth(), today.getDate()) <
+        new Date(today.getFullYear(), birthdate.getMonth(), birthdate.getDate())
+      )
+        age--;
+      return age;
     },
 
     speechToText(){

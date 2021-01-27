@@ -1,8 +1,8 @@
 {
-  "name": "usafe",
+  "name": "wesafe",
   "version": "0.0.1",
   "description": "Imagine Cup 2021 Project",
-  "productName": "USafe",
+  "productName": "WeSafe",
   "author": "Davi Coscarelli <davicoscarelli@gmail.com>",
   "private": true,
   "scripts": {

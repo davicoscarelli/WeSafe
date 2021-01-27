@@ -45,7 +45,7 @@
                 <q-item-section>My Account</q-item-section>
               </q-item>
 
-              <q-item clickable v-ripple>
+              <q-item clickable @click="logout" v-ripple>
                 <q-item-section avatar>
                   <q-icon :color="iconColor" name="mdi-exit-run" />
                 </q-item-section>
@@ -62,15 +62,12 @@
 </template>
 
 <script>
-// import { User } from 'src/models/User'
+import { Notify } from 'quasar'
 
 export default {
-  data: () => ({
-
-  }),
   computed: {
     user() {
-      let user = {name: 'Test User'}
+      let user = {name: "Test User"}
       if (!localStorage.user){
         localStorage.user = JSON.stringify(user)
       }else{
@@ -89,6 +86,26 @@ export default {
       this.$q.dark.set(dark)
       localStorage.setItem('theme', JSON.stringify({ dark }))
     },
+    async logout() {
+      localStorage.removeItem('user')
+      localStorage.removeItem('theme')
+      this.showAlert({
+        message: `See you soon ${this.user.name}! 😉`,
+        icon: 'check',
+        color: 'positive'
+      })
+      window.location.reload()
+    },
+    showAlert({ message, icon, color }) {
+      Notify.create({
+        progress: true,
+        timeout: 3000,
+        message,
+        icon,
+        color,
+        position: 'bottom'
+      })
+    }
   },
   created(){
     const theme = JSON.parse(localStorage.theme)

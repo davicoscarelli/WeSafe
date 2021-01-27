@@ -49,7 +49,7 @@
                 />
               </div>
 
-              <div class="col-12 col-md-6">
+              <div class="col-12">
                 <q-input
                   class="q-mt-sm"
                   id="email"
@@ -108,7 +108,7 @@
                 </h5>
               </div>
 
-              <div class="col-12 col-md-8">
+              <div class="col-12">
                 <q-input
                   id="allergies"
                   rounded
@@ -122,7 +122,7 @@
 
               
 
-              <div class="col-12 col-md-1 text-center" >
+              <div class="col-12 text-center" >
                 <q-btn
                   type="submit"
                   :loading="loading"

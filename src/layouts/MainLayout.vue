@@ -62,6 +62,12 @@ const linksData = [
     icon: 'home',
     link: '/'
   },
+  {
+    title: 'My Account',
+    caption: '',
+    icon: 'account_circle',
+    link: '/my-account'
+  },
   
 ];
 

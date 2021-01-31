@@ -2,6 +2,14 @@
 
 Imagine cup 2021 project
 
+
+
+## Testing it online
+Just click on the link:
+
+
+## Testing it locally
+
 ## Install the dependencies
 ```bash
 yarn
@@ -13,10 +21,4 @@ quasar dev
 ```
 
 
-### Build the app for production
-```bash
-quasar build
-```
 
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).

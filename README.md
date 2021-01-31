@@ -11,7 +11,7 @@ Just [click here](https://wonderful-forest-06b2afc10.azurestaticapps.net/#/)
 
 ## Testing it locally
 
-## Install the dependencies
+### Install the dependencies
 ```bash
 yarn
 ```

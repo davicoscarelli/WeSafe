@@ -1,11 +1,12 @@
-# WeSafe (wesafe)
+# WeSafe
+Saving Together
 
 Imagine cup 2021 project
 
 
-
 ## Testing it online
-Just click on the link:
+Just [click here](https://wonderful-forest-06b2afc10.azurestaticapps.net/#/)
+
 
 
 ## Testing it locally
